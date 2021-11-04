@@ -1,15 +1,21 @@
-//header component
+//cookies component
 var cookieAccept = '[onclick="Cookiebot.submitCustomConsent(true, true, true); hideCookieBanner();"]';
+
+//header component
 var signInButton = "a[class*='login'] span[class='hidden-xs']";
+
 //auth component
 var userNameField = '#ShopLoginForm_Login';
 var passwordField = '#ShopLoginForm_Password';
 var submitButton = '.col-sm-9 > .btn-primary';
+
 //plp component
 var addToCartButtons = 'button[class="btn spls-add-to-cart-btn btn-lg btn-block btn-primary stock-check"]';
+
 //minicart component
 var miniCartButton = '.quick-cart-link';
 var viewCartButton = '.view-cart';
+
 //cart component
 var cartItem = ':nth-child(3) > .list-item-row';
 var cartItemTitle = '.text-dark-bold';
@@ -27,12 +33,12 @@ describe("Add a product to cart", function () {
 })
 
 function navigateToStorefront() {
-    cy.clearCookies();
     cy.visit("https://www-uat-live.pressel.at/");
 }
 
 function closeCookies() {
     cy.get(cookieAccept).click();
+    Cypress.Cookies.preserveOnce('CookieConsent', 'remember_token')
 }
 
 function signIn() {
@@ -47,10 +53,10 @@ function searchForAll() {
 }
 
 function addRandomProductToCart() {
-    cy.get(addToCartButtons, { timeout: 10000 })
-        .should('be.enabled')
-        .eq(Math.floor(Math.random() * 3))
-        .click({ force: true, multiple: true });
+    cy.get(addToCartButtons).its('length').then(elementCount => {
+        let selected = Cypress._.random(elementCount - 1); 
+        cy.get(addToCartButtons).eq(selected).click(); 
+    });
     cy.get('.loader-wrapper', { timeout: 10000 }).should('be.visible');
 }
 
